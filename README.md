@@ -1,7 +1,7 @@
 # QuickNotes - Mini SaaS Application
 
 A full-stack note-taking application with user authentication, tag-based search, Redis caching, and scalable architecture with load balancing.
-
+ 
 ---
 
 ## 🚀 Quick Start (For Reviewers)
