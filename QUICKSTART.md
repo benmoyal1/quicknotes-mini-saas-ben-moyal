@@ -116,7 +116,7 @@ docker logs quicknotes-postgres
 docker logs quicknotes-redis
 docker logs quicknotes-frontend
 ```
-
+ 
 ### Reset database
 ```bash
 make down
