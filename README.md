@@ -2,6 +2,73 @@
 
 A full-stack note-taking application with user authentication, tag-based search, Redis caching, and scalable architecture with load balancing.
 
+---
+
+## 🚀 Quick Start (For Reviewers)
+
+### Prerequisites
+
+- **Docker Desktop** installed and running
+- **Git** installed
+- That's it! No Node.js, npm, PostgreSQL, or Redis needed - Halleluja.
+
+### Installation (3 Commands)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/benmoyal1/quicknotes-mini-saas-ben-moyal.git
+cd quicknotes-mini-saas-ben-moyal
+
+# 2. Build and start all services
+make build && make up
+
+# Alternative (if Make is not installed):
+docker-compose build && docker-compose up -d
+
+# 3. Wait 60 seconds for services to start, then access:
+```
+
+### Access the Application
+
+- **Frontend**: http://localhost:3000
+- **API**: http://localhost:8080/api
+- **Health Check**: http://localhost:8080/health
+- **Metrics**: http://localhost:8080/metrics
+
+### Test the App
+
+1. Open http://localhost:3000
+2. Register a new account (e.g., `test@example.com` / `password123`)
+3. Create notes with tags
+4. Test tag filtering
+
+### Verify Services
+
+```bash
+# Check all services are healthy
+docker-compose ps
+# OR
+make status
+```
+
+### Run Automated Tests
+
+```bash
+./test-api.sh
+```
+
+### Stop the Application
+
+```bash
+make down
+# OR
+docker-compose down
+```
+
+**Total time: ~5 minutes from clone to running app**
+
+---
+
 ## Features
 
 - **User Management**: Registration and login with JWT authentication
@@ -15,6 +82,7 @@ A full-stack note-taking application with user authentication, tag-based search,
 ## Tech Stack
 
 ### Frontend
+
 - React 18 with TypeScript
 - Vite for build tooling
 - React Router for navigation
@@ -22,6 +90,7 @@ A full-stack note-taking application with user authentication, tag-based search,
 - Context API for state management
 
 ### Backend
+
 - NestJS framework with TypeScript
 - PostgreSQL for data persistence
 - Redis for caching
@@ -30,6 +99,7 @@ A full-stack note-taking application with user authentication, tag-based search,
 - Prometheus metrics with prom-client
 
 ### DevOps
+
 - Docker & Docker Compose
 - NGINX load balancer
 - Multi-stage builds for optimization
@@ -69,23 +139,33 @@ A full-stack note-taking application with user authentication, tag-based search,
     └──────────┘  └──────────┘  └──────────┘
 ```
 
-## Quick Start
+## Detailed Setup Instructions
 
-### Prerequisites
-- Docker and Docker Compose installed
-- Make (optional, for using Makefile commands)
+> **Quick Start**: See the [🚀 Quick Start section](#-quick-start-for-reviewers) at the top for fastest setup.
 
-### Setup and Run
+### Development Mode (Hot Reload)
 
-1. **Clone the repository**
+For development with automatic code reloading:
+
 ```bash
-cd assigment
+# Start in development mode
+make dev
+
+# Or using Docker Compose directly
+docker-compose -f docker-compose.dev.yml up
+
+# See HOT_RELOAD_GUIDE.md for complete documentation
 ```
 
-2. **Start the application (Production)**
+### Production Mode
+
+For production deployment with 2 API instances and load balancing:
+
 ```bash
-# Using Make
+# Build images
 make build
+
+# Start all services
 make up
 
 # Or using Docker Compose directly
@@ -93,20 +173,14 @@ docker-compose build
 docker-compose up -d
 ```
 
-3. **Start the application (Development with hot reload)**
-```bash
-# Using Make
-make dev
+### Access Points
 
-# Or using Docker Compose directly
-docker-compose -f docker-compose.dev.yml up
-```
+Once services are running:
 
-4. **Access the application**
-- Frontend: http://localhost:3000
-- API: http://localhost:8080/api
-- Health Check: http://localhost:8080/health
-- Metrics: http://localhost:8080/metrics
+- **Frontend**: http://localhost:3000
+- **API**: http://localhost:8080/api
+- **Health Check**: http://localhost:8080/health
+- **Metrics**: http://localhost:8080/metrics
 
 ### Environment Variables
 
@@ -117,6 +191,7 @@ cp backend/.env.example backend/.env
 ```
 
 Key variables:
+
 - `DATABASE_HOST`: PostgreSQL host (default: postgres)
 - `DATABASE_PORT`: PostgreSQL port (default: 5432)
 - `DATABASE_NAME`: Database name (default: quicknotes)
@@ -129,6 +204,7 @@ Key variables:
 ## API Documentation
 
 ### Base URL
+
 ```
 http://localhost:8080/api
 ```
@@ -136,6 +212,7 @@ http://localhost:8080/api
 ### Authentication Endpoints
 
 #### Register
+
 ```http
 POST /api/auth/register
 Content-Type: application/json
@@ -158,6 +235,7 @@ Response:
 ```
 
 #### Login
+
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -171,6 +249,7 @@ Response: (same as register)
 ```
 
 #### Get Profile
+
 ```http
 GET /api/auth/profile
 Authorization: Bearer {access_token}
@@ -189,6 +268,7 @@ Response:
 ### Notes Endpoints (All require authentication)
 
 #### Get All Notes
+
 ```http
 GET /api/notes
 Authorization: Bearer {access_token}
@@ -212,6 +292,7 @@ Response:
 ```
 
 #### Get Single Note
+
 ```http
 GET /api/notes/:id
 Authorization: Bearer {access_token}
@@ -220,6 +301,7 @@ Response: (single note object)
 ```
 
 #### Create Note
+
 ```http
 POST /api/notes
 Authorization: Bearer {access_token}
@@ -235,6 +317,7 @@ Response: (created note object)
 ```
 
 #### Update Note
+
 ```http
 PATCH /api/notes/:id
 Authorization: Bearer {access_token}
@@ -250,6 +333,7 @@ Response: (updated note object)
 ```
 
 #### Delete Note
+
 ```http
 DELETE /api/notes/:id
 Authorization: Bearer {access_token}
@@ -263,6 +347,7 @@ Response:
 ### Monitoring Endpoints
 
 #### Health Check
+
 ```http
 GET /health
 
@@ -281,6 +366,7 @@ Response:
 ```
 
 #### Prometheus Metrics
+
 ```http
 GET /metrics
 
@@ -352,11 +438,13 @@ assigment/
 ## Design Decisions & Tradeoffs
 
 ### 1. Load Balancing Strategy
+
 - **Choice**: NGINX with round-robin
 - **Tradeoff**: Simple but effective. HAProxy would offer more features but adds complexity.
 - **Reasoning**: NGINX is lightweight, well-documented, and sufficient for this use case.
 
 ### 2. Caching Strategy
+
 - **Choice**: Redis caching with full result sets
 - **Cache Key Pattern**: `notes:user:{userId}:tags:{tags}`
 - **TTL**: 5 minutes
@@ -364,26 +452,31 @@ assigment/
 - **Tradeoff**: Simple invalidation but may clear more than necessary. More granular caching would be complex.
 
 ### 3. Database Schema
+
 - **Choice**: PostgreSQL native arrays for tags
 - **Tradeoff**: Simpler schema (no junction table) but less flexible for complex tag queries.
 - **Reasoning**: Sufficient for tag filtering, reduces complexity.
 
 ### 4. Authentication
+
 - **Choice**: JWT stored in localStorage
 - **Tradeoff**: Vulnerable to XSS but simpler than httpOnly cookies. Suitable for demo.
 - **Reasoning**: Simpler implementation, works with CORS, stateless.
 
 ### 5. TypeORM Synchronize
+
 - **Setting**: `synchronize: true` in development
 - **WARNING**: Should be `false` in production, use migrations instead
 - **Reasoning**: Faster development, but risky for production data.
 
 ### 6. API Scaling
+
 - **Choice**: 2 instances behind NGINX
 - **Reasoning**: Demonstrates horizontal scaling without over-engineering.
 - **Future**: Could add auto-scaling based on metrics.
 
 ### 7. Session Storage
+
 - **Choice**: Stateless JWT (no Redis session storage)
 - **Tradeoff**: Can't invalidate tokens before expiry. Redis sessions would allow logout.
 - **Reasoning**: True stateless architecture, simpler for load balancing.
@@ -391,26 +484,33 @@ assigment/
 ## Monitoring & Observability
 
 ### Health Checks
+
 All services have health checks configured in docker-compose:
+
 - Database: PostgreSQL `pg_isready`
 - Redis: `redis-cli ping`
 - API: HTTP check on `/health`
 - NGINX: HTTP check forwarded to API
 
 ### Metrics
+
 Prometheus-compatible metrics exposed at `/metrics`:
+
 - `http_request_duration_seconds`: Request duration histogram
 - `http_requests_total`: Total request counter
 - Default Node.js metrics (CPU, memory, GC, etc.)
 
 ### Load Balancer Health Checks
+
 NGINX performs passive health checks:
+
 - `max_fails=3`: Mark backend down after 3 failures
 - `fail_timeout=30s`: Wait 30s before retrying failed backend
 
 ## Testing
 
 ### Manual Testing
+
 ```bash
 # Register a user
 curl -X POST http://localhost:8080/api/auth/register \
@@ -440,7 +540,9 @@ curl http://localhost:8080/metrics
 ```
 
 ### Verify Load Balancing
+
 Check NGINX logs to see requests distributed across api-1 and api-2:
+
 ```bash
 docker-compose logs nginx
 ```
@@ -448,6 +550,7 @@ docker-compose logs nginx
 ## Troubleshooting
 
 ### Services not starting
+
 ```bash
 # Check service status
 make status
@@ -462,6 +565,7 @@ make up
 ```
 
 ### Database connection issues
+
 ```bash
 # Check PostgreSQL logs
 docker logs quicknotes-postgres
@@ -471,6 +575,7 @@ make db-shell
 ```
 
 ### Redis connection issues
+
 ```bash
 # Check Redis logs
 docker logs quicknotes-redis
@@ -480,6 +585,7 @@ make redis-cli
 ```
 
 ### API errors
+
 ```bash
 # Check API logs
 docker logs quicknotes-api-1
@@ -494,11 +600,13 @@ make backend-shell
 ### Running Locally (without Docker)
 
 1. **Start PostgreSQL and Redis**
+
 ```bash
 docker-compose up postgres redis -d
 ```
 
 2. **Backend**
+
 ```bash
 cd backend
 npm install
@@ -506,6 +614,7 @@ npm run start:dev
 ```
 
 3. **Frontend**
+
 ```bash
 cd frontend
 npm install
@@ -513,7 +622,9 @@ npm run dev
 ```
 
 ### Hot Reload in Docker
+
 Use development compose file for hot reload:
+
 ```bash
 make dev
 ```
@@ -521,6 +632,7 @@ make dev
 ## Production Considerations
 
 ### Security
+
 - [ ] Change `JWT_SECRET` to a strong random string
 - [ ] Use environment-specific secrets (not in docker-compose)
 - [ ] Enable HTTPS with SSL certificates
@@ -529,6 +641,7 @@ make dev
 - [ ] Use httpOnly cookies instead of localStorage for JWT
 
 ### Database
+
 - [ ] Disable `synchronize: true` in TypeORM
 - [ ] Create and run migrations
 - [ ] Set up database backups
@@ -536,6 +649,7 @@ make dev
 - [ ] Add database indexes for performance
 
 ### Monitoring
+
 - [ ] Set up Prometheus scraping
 - [ ] Add Grafana dashboards
 - [ ] Configure alerting
@@ -543,6 +657,7 @@ make dev
 - [ ] Implement distributed tracing
 
 ### Scaling
+
 - [ ] Use managed PostgreSQL (RDS, Cloud SQL, etc.)
 - [ ] Use managed Redis (ElastiCache, Redis Cloud, etc.)
 - [ ] Configure auto-scaling for API instances
